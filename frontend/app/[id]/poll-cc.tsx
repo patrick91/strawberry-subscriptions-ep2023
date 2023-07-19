@@ -1,8 +1,9 @@
 "use client";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import {
   useReadQuery,
   useBackgroundQuery,
+  useSuspenseQuery,
 } from "@apollo/experimental-nextjs-app-support/ssr";
 import { useMutation } from "@apollo/client";
 import { QueryReference } from "@apollo/client/react/cache/QueryReference";
@@ -13,36 +14,29 @@ import { useState, useCallback } from "react";
 import {
   VoteDocument,
   GetPollDocument,
-  GetPollQuery,
+  OnPollUpdateDocument,
 } from "@/components/poll/documents.generated";
 
 export const PollWrapper = ({ id }: { id: string }) => {
-  const [queryRef] = useBackgroundQuery(GetPollDocument, {
+  const { data, subscribeToMore } = useSuspenseQuery(GetPollDocument, {
     variables: { id },
   });
-
-  return (
-    <Suspense fallback={<>Loading...</>}>
-      <Poll pollId={id} queryRef={queryRef} />
-    </Suspense>
-  );
-};
-
-const Poll = ({
-  pollId,
-  queryRef,
-}: {
-  pollId: string;
-  queryRef: QueryReference<GetPollQuery>;
-}) => {
-  const { data } = useReadQuery(queryRef);
   const [showResults, setShowResults] = useState(false);
   const [mutate, { loading: mutationLoading }] = useMutation(VoteDocument);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMore({
+      document: OnPollUpdateDocument,
+      variables: { id },
+    });
+
+    return () => unsubscribe();
+  }, [subscribeToMore]);
 
   const handleClick = useCallback(
     async (answerId: string) => {
       await mutate({
-        variables: { pollId, answerId },
+        variables: { pollId: id, answerId },
       });
 
       setShowResults(true);
