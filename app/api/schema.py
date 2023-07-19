@@ -1,3 +1,6 @@
+import asyncio
+from typing import AsyncGenerator
+
 import strawberry
 import json
 from uuid import UUID
@@ -97,4 +100,19 @@ class Mutation:
             return Poll.from_db(poll)
 
 
-schema = strawberry.Schema(query=Query, mutation=Mutation)
+@strawberry.type
+class Subscription:
+    @strawberry.subscription
+    async def on_poll_update(
+        self, info: Info[Context, None], id: strawberry.ID
+    ) -> AsyncGenerator[Poll, None]:
+        while True:
+            if poll := await get_poll(info.context["edgedb"], id=UUID(id)):
+                yield Poll.from_db(poll)
+            else:
+                return
+
+            await asyncio.sleep(2)
+
+
+schema = strawberry.Schema(query=Query, mutation=Mutation, subscription=Subscription)
