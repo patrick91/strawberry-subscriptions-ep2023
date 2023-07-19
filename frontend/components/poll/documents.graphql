@@ -1,0 +1,27 @@
+mutation vote($pollId: ID!, $answerId: ID!) {
+  vote(pollId: $pollId, answerId: $answerId) {
+    id
+    question
+    totalVotes
+    answers {
+      id
+      text
+      votes
+      percentage
+    }
+  }
+}
+
+query GetPoll($id: ID!) {
+  poll(id: $id) {
+    id
+    question
+    totalVotes
+    answers {
+      id
+      text
+      votes
+      percentage
+    }
+  }
+}

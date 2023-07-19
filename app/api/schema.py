@@ -16,6 +16,7 @@ class Answer:
     id: strawberry.ID
     text: str
     votes: int
+    percentage: int
 
 
 @strawberry.type
@@ -33,16 +34,23 @@ class Poll:
                 id=strawberry.ID(str(answer.id)),
                 text=answer.text,
                 votes=answer.votes,
+                percentage=0,
             )
             for answer in poll.answers
         ]
+
+        total_votes = sum(answer.votes for answer in answers)
+
+        if total_votes:
+            for answer in answers:
+                answer.percentage = round(answer.votes / total_votes * 100)
 
         return cls(
             id=strawberry.ID(str(poll.id)),
             question=poll.question,
             description=poll.description,
             answers=answers,
-            total_votes=sum(answer.votes for answer in poll.answers),
+            total_votes=total_votes,
         )
 
 
