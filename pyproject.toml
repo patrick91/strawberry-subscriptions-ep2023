@@ -1,0 +1,18 @@
+[project]
+authors = [
+    {name = "Patrick Arminio", email = "patrick.arminio@gmail.com"},
+]
+dependencies = [
+    "strawberry-graphql[cli,fastapi]>=0.195.2",
+    "uvicorn>=0.23.0",
+    "edgedb>=1.5.0",
+]
+description = ""
+license = {text = "MIT"}
+name = ""
+readme = "README.md"
+requires-python = ">=3.11"
+version = ""
+
+[tool.ruff]
+select = ["E", "F"]
