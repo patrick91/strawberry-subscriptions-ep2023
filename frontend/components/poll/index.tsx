@@ -41,7 +41,6 @@ export const Poll = ({
             text={answer.text}
             percentage={answer.percentage}
             showPercentage={showResults}
-            disabled={showResults}
             loading={loading}
             votes={answer.votes}
             onClick={() => handleClick(answer.id)}
