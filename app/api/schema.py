@@ -123,4 +123,8 @@ class Subscription:
             await asyncio.sleep(2)
 
 
-schema = strawberry.Schema(query=Query, mutation=Mutation, subscription=Subscription)
+schema = strawberry.Schema(
+    query=Query,
+    mutation=Mutation,
+    subscription=Subscription,
+)
